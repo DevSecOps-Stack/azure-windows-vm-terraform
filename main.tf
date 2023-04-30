@@ -102,18 +102,19 @@ data "azurerm_log_analytics_workspace" "example_log_analytics" {
   resource_group_name = "logs-pd-hub-rg"
 }
 resource "azurerm_virtual_machine_extension" "example" {
-  count = var.node_count
+  count                = var.node_count
   name                 = "example-extension"
-  virtual_machine_id   =  azurerm_linux_virtual_machine.example_linux_vm[count.index].id
+  virtual_machine_id   = azurerm_windows_virtual_machine.example_vm[count.index].id
   publisher            = "Microsoft.EnterpriseCloud.Monitoring"
-  type                 = "OmsAgentForLinux"
-  type_handler_version = "1.13"
+  type                 = "MicrosoftMonitoringAgent"
+  type_handler_version = "1.0"
+  auto_upgrade_minor_version = true
   settings             = <<SETTINGS
 {
     "workspaceId": "${data.azurerm_log_analytics_workspace.example_log_analytics.workspace_id}"
 }
 SETTINGS
-  protected_settings = <<PROTECTED_SETTINGS
+  protected_settings   = <<PROTECTED_SETTINGS
     {
         "workspaceKey": "${data.azurerm_log_analytics_workspace.example_log_analytics.primary_shared_key}"
     }
@@ -121,34 +122,27 @@ PROTECTED_SETTINGS
 }
 
 # Virtual Machine Creation — Linux
-resource "azurerm_linux_virtual_machine" "example_linux_vm" {
-  count = var.node_count
-  name  = "${var.resource_prefixes}-${format("%02d", count.index)}"
-  #name = "${var.resource_prefix}-VM"
-  location                      = azurerm_resource_group.example_rg.location
-  resource_group_name           = azurerm_resource_group.example_rg.name
-  network_interface_ids         = [element(azurerm_network_interface.example_nic.*.id, count.index)]
-  size                          = "Standard_A1_v2"
-  admin_username                = "adminuser"
+resource "azurerm_windows_virtual_machine" "example_vm" {
+  count                 = var.node_count
+  name                  = "${var.resource_prefixes}-${format("%02d", count.index)}"
+  location              = azurerm_resource_group.example_rg.location
+  resource_group_name   = azurerm_resource_group.example_rg.name
+  network_interface_ids = [element(azurerm_network_interface.example_nic.*.id, count.index)]
+  admin_username        = "adminuser"
+  admin_password        = "P@ssw0rd1234!"
+  size                  = "Standard_DS1_v2"
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
-  }
-  admin_ssh_key {
-    username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
-  }
-  os_disk {
-    caching              = "ReadWrite"
+   os_disk {
+    name              = "${var.resource_prefixes}-osdisk${count.index}"
+    caching           = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
 
-  
-  tags = {
-    environment = "Test"
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2019-Datacenter"
+    version   = "latest"
   }
 
 }
