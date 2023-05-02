@@ -1,10 +1,10 @@
 # Configure the Azure Provider
 provider "azurerm" {
   # whilst the `version` attribute is optional, we recommend pinning to a given version of the Provider
-  subscription_id = "205021e2-11c0-4939-8aa7-41c29b36b86f"
-  # client_id = "97545937–XXXX–XXXX-XXXX-XXXXXXXXXXXX"
-  # client_secret = ".3GGR_XXXXX~XXXX-XXXXXXXXXXXXXXXX"
-  # tenant_id = "73d20f0d-XXXX–XXXX–XXXX-XXXXXXXXXXXX"
+  subscription_id = "02fd588f-2388-466e-8856-72384ebc4e9c"
+  client_id = "97545937–XXXX–XXXX-XXXX-XXXXXXXXXXXX"
+  client_secret = "x3V8Q~0leJhGdlFcs148f68HJP0NQ50mpz~17aJV"
+  tenant_id = "4c6f1364-8db1-4e57-95ef-b3cf7dd7d4c9"
   # version = "~> 2.54.0"
   features {}
 }
