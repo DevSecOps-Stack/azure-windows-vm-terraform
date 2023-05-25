@@ -1,8 +1,8 @@
-variable "node_location" {
+variable "resource_prefixes" {
 type = string
 }
 
-variable "resource_prefixes" {
+variable "node_location" {
 type = string
 }
 
